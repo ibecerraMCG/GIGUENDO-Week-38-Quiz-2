@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 38 Practice Quiz 2</title>
+
+    <style>
+        /* --- CSS Variables & Themes --- */
+        :root {
+            --transition-speed: 0.3s;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Default Feedback Colors (Fallback for custom themes) */
+            --feedback-success-bg: #064e3b;
+            --feedback-success-border: #059669;
+            --feedback-success-text: #a7f3d0;
+            --feedback-error-bg: #7f1d1d;
+            --feedback-error-border: #dc2626;
+            --feedback-error-text: #fecaca;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #1e293b; --bg-card: #334155; --bg-header: #0f172a;
+            --text-main: #f1f5f9; --text-muted: #94a3b8; --text-accent: #38bdf8;
+            --border-color: #475569; --highlight-bg: #475569;
+            --button-bg: #38bdf8; --button-text: #0f172a; --button-hover: #0ea5e9;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f3f4f6; --bg-card: #ffffff; --bg-header: #ffffff;
+            --text-main: #1f2937; --text-muted: #6b7280; --text-accent: #2563eb;
+            --border-color: #e5e7eb; --highlight-bg: #f3f4f6;
+            --button-bg: #2563eb; --button-text: #ffffff; --button-hover: #1d4ed8;
+            --feedback-success-bg: #ecfdf5; --feedback-success-border: #34d399; --feedback-success-text: #065f46;
+            --feedback-error-bg: #fef2f2; --feedback-error-border: #f87171; --feedback-error-text: #991b1b;
+        }
+
+        [data-theme="midnight"] {
+            --bg-body: #000000; --bg-card: #000000; --bg-header: #000000;
+            --text-main: #e0e0e0; --text-muted: #888888; --text-accent: #90caf9;
+            --border-color: #333333; --highlight-bg: #1a1a1a;
+            --button-bg: #90caf9; --button-text: #000000; --button-hover: #42a5f5;
+            --feedback-success-bg: #051b11; --feedback-success-border: #0f5132; --feedback-success-text: #75b798;
+            --feedback-error-bg: #2c0b0e; --feedback-error-border: #842029; --feedback-error-text: #ea868f;
+        }[data-theme="legacy-dark"] {
+            --bg-body: #2d343e; --bg-card: #3c424f; --bg-header: #3c424f;
+            --text-main: #e8e6e3; --text-muted: #b0c4de; --text-accent: #8ab4f8;
+            --border-color: #555; --highlight-bg: #454c5a;
+            --button-bg: #8ab4f8; --button-text: #202124; --button-hover: #a3c5f9;
+            --feedback-success-bg: #344e41; --feedback-success-border: #52b788; --feedback-success-text: #c7f9cc;
+            --feedback-error-bg: #5e2129; --feedback-error-border: #a4133c; --feedback-error-text: #f8d7da;
+        }
+
+        [data-theme="sepia"] {
+            --bg-body: #f4ecd8; --bg-card: #fdf6e3; --bg-header: #e4d5b7;
+            --text-main: #433422; --text-muted: #7c6f5a; --text-accent: #a05a2c;
+            --border-color: #d3c4a5; --highlight-bg: #ebe1c9;
+            --button-bg: #a05a2c; --button-text: #fdf6e3; --button-hover: #864822;
+            --feedback-success-bg: #e6f4ea; --feedback-success-border: #8ab893; --feedback-success-text: #2e4c35;
+            --feedback-error-bg: #f9e3e3; --feedback-error-border: #d48f8f; --feedback-error-text: #5c2b2b;
+        }
+
+        [data-theme="contrast"] {
+            --bg-body: #000000; --bg-card: #000000; --bg-header: #000000;
+            --text-main: #ffffff; --text-muted: #dddddd; --text-accent: #ffff00;
+            --border-color: #ffffff; --highlight-bg: #333333;
+            --button-bg: #ffff00; --button-text: #000000; --button-hover: #e6e600;
+            --feedback-success-bg: #000000; --feedback-success-border: #00ff00; --feedback-success-text: #00ff00;
+            --feedback-error-bg: #000000; --feedback-error-border: #ff0000; --feedback-error-text: #ff0000;
+        }
+
+        /* --- Global Reset & Layout --- */
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-main);
+            margin: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+            line-height: 1.6;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-header);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        header.unpinned { position: relative; box-shadow: none; }
+
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; flex-wrap: wrap; gap: 15px;
+        }
+
+        header h1 { font-size: 1.5rem; margin: 0; color: var(--text-accent); font-weight: 700; }
+
+        .controls-wrapper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+        /* --- Custom Theme Builder --- */
+        .custom-builder {
+            display: none; flex-wrap: wrap; gap: 15px;
+            background-color: var(--bg-card); padding: 10px 15px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            margin-top: 5px; font-size: 0.85rem; animation: fadeIn 0.3s;
+            width: 100%; justify-content: flex-end;
+        }
+        .custom-builder.active { display: flex; }
+        .color-picker-group { display: flex; align-items: center; gap: 8px; }
+        .color-picker-group input[type="color"] {
+            border: none; width: 25px; height: 25px; border-radius: 4px;
+            cursor: pointer; padding: 0; background: none;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Controls --- */
+        .header-btn {
+            background-color: var(--highlight-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-btn:hover {
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+        }
+
+        .pin-btn {
+            background: none; border: 1px solid var(--border-color); color: var(--text-main);
+            cursor: pointer; padding: 0 10px; border-radius: 6px; font-size: 1rem;
+            transition: background-color 0.2s; height: 34px; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .pin-btn:hover { background-color: var(--highlight-bg); }
+        .pin-btn.pin-active { background-color: rgba(0, 0, 0, 0.1); }
+
+        select#theme-select {
+            padding: 0 12px; border-radius: 6px; border: 1px solid var(--border-color);
+            background-color: var(--bg-card); color: var(--text-main);
+            cursor: pointer; font-family: inherit; height: 34px;
+        }
+
+        /* --- Section Navigation --- */
+        .section-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+        .section-nav button {
+            background-color: var(--highlight-bg); color: var(--text-main);
+            border: 1px solid var(--border-color); padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 500; transition: all 0.2s;
+        }
+        .section-nav button:hover { border-color: var(--text-accent); color: var(--text-accent); }
+
+        /* --- Main Content --- */
+        .container {
+            max-width: 850px;
+            margin: 2rem auto;
+            padding: 0 1rem 4rem 1rem;
+        }
+
+        .section-header {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--text-accent);
+            color: var(--text-accent);
+            font-size: 1.5rem;
+            font-weight: 700;
+            scroll-margin-top: 150px; /* Offset for sticky header */
+        }
+
+        /* --- Question Card --- */
+        .question-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .lo-box {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--text-accent);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+            display: none; /* Hidden by default */
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        /* --- Options --- */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: var(--highlight-bg);
+            border-color: var(--text-muted);
+        }
+
+        .option-label input {
+            margin-top: 0.3rem;
+            margin-right: 1rem;
+            accent-color: var(--text-accent);
+            transform: scale(1.2);
+        }
+
+        /* --- Buttons --- */
+        .btn-check {
+            margin-top: 1.5rem;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-check:hover {
+            opacity: 0.9;
+        }
+
+        .btn-link {
+            display: inline-block;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: opacity 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn-link:hover {
+            opacity: 0.9;
+        }
+
+        /* --- Feedback Area --- */
+        .feedback {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+            border: 1px solid transparent;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            background-color: var(--feedback-success-bg);
+            border-color: var(--feedback-success-border);
+            color: var(--feedback-success-text);
+        }
+
+        .feedback.incorrect {
+            background-color: var(--feedback-error-bg);
+            border-color: var(--feedback-error-border);
+            color: var(--feedback-error-text);
+        }
+
+        .feedback-header {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .rationale {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .source {
+            display: block;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+            font-style: italic;
+            border-top: 1px dashed currentColor;
+            padding-top: 0.5rem;
+        }
+
+        /* --- Mobile Tweaks --- */
+        @media (max-width: 768px) {
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .controls-wrapper { width: 100%; justify-content: flex-start; }
+            .section-nav { justify-content: flex-start; }
+            .custom-builder { justify-content: flex-start; }
+            header h1 { font-size: 1.25rem; }
+            #reveal-all-container { justify-content: flex-start !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <div class="header-top">
+            <h1>Week 38 Practice Quiz 2</h1>
+            <div class="controls-wrapper">
+                
+                <!-- Reveal LOs Button -->
+                <button id="reveal-all-btn" class="header-btn" onclick="toggleAllLOs()">Show Learning Objectives</button>
+                
+                <!-- Pin Button -->
+                <button class="pin-btn pin-active" id="pin-btn" onclick="toggleHeader()" title="Pin/Unpin Header">📌</button>
+                
+                <!-- Theme Selector -->
+                <div class="theme-control">
+                    <select id="theme-select" onchange="changeTheme(this.value)">
+                        <option value="dark">Modern Dark</option>
+                        <option value="midnight">Midnight</option>
+                        <option value="light">Modern Light</option>
+                        <option value="legacy-dark">Legacy Dark</option>
+                        <option value="sepia">Sepia</option>
+                        <option value="contrast">High Contrast</option>
+                        <option value="custom">⚙️ Custom...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Custom Theme Color Pickers -->
+            <div class="custom-builder" id="custom-builder">
+                <div class="color-picker-group">
+                    <label>Background:</label>
+                    <input type="color" id="color-bg" value="#1a1a2e" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Cards:</label>
+                    <input type="color" id="color-card" value="#16213e" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Text:</label>
+                    <input type="color" id="color-text" value="#e94560" oninput="updateCustomTheme()">
+                </div>
+                <div class="color-picker-group">
+                    <label>Accent:</label>
+                    <input type="color" id="color-accent" value="#0f3460" oninput="updateCustomTheme()">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dynamic Navigation Bar -->
+        <div class="section-nav" id="section-nav"></div>
+    </header>
+
+    <div class="container">
+        <div id="quiz-root">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- Data ---
+        const quizData =[
+            // --- Section 1: Lower GI Histology ---
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO1: Describe the histology of the small intestines. Identify the layers associated with the small intestines.",
+                question: "A 45-year-old man undergoes a partial small bowel resection following abdominal trauma. The pathologist examines the resected tissue under the microscope and notes that the mucosa and submucosa are thrown up into distinct, repeating circular folds that project into the lumen. Which of the following terms best describes these specific anatomical structures?",
+                options: {
+                    A: "Haustra",
+                    B: "Intestinal crypts",
+                    C: "Peyer's patches",
+                    D: "Plicae circulares",
+                    E: "Taeniae coli"
+                },
+                correctAnswer: "D",
+                rationale: "The plicae circulares are circular folds formed by both the mucosa and submucosa of the small intestine. They serve to increase the surface area for absorption.",
+                source: "Lower GI Histology PDF, Slide 6: 'Pilcae ciculares – mucosa and submucosa are thrown up into folds'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO1: Describe the histology of the small intestines. Identify the layers associated with the small intestines.",
+                question: "A biopsy taken from the proximal small intestine of a 50-year-old woman reveals the presence of specialized glands located entirely within the submucosa. These glands secrete an alkaline mucus that helps neutralize acidic chyme entering from the stomach. In which of the following specific regions of the gastrointestinal tract was this biopsy most likely taken?",
+                options: {
+                    A: "Ascending colon",
+                    B: "Duodenum",
+                    C: "Ileum",
+                    D: "Jejunum",
+                    E: "Rectum"
+                },
+                correctAnswer: "B",
+                rationale: "Duodenal (Brunner’s) glands are uniquely located in the submucosa of the duodenum. They secrete alkaline mucus to neutralize chyme, making the luminal contents less acidic and suitable for pancreatic enzyme action.",
+                source: "Lower GI Histology PDF, Slide 20: 'Duodenal (Brunner’s) glands (DG) are in the duodenum... Mucus is alkaline which neutralizes chyme entering the duodenum'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO2: Identify cell types of the small intestines that contribute the physiology of the small intestines (enterocytes, goblet cells, enterocytes, Paneth cells Enteroendocrine cells, M cells).",
+                question: "A researcher is studying the absorptive capabilities of the small intestine. Electron microscopy of the intestinal lining reveals tall, columnar cells with oval nuclei. The apical surface of these cells is covered by numerous microvilli coated with a glycocalyx. Which of the following features allows these specific cells to selectively retain absorbed substances?",
+                options: {
+                    A: "Basolateral pockets housing lymphocytes",
+                    B: "Dense eosinophilic secretory granules",
+                    C: "Secretion of glycoprotein mucins",
+                    D: "Secretion of peptide hormones",
+                    E: "Tight junctions between adjacent cells"
+                },
+                correctAnswer: "E",
+                rationale: "Enterocytes are tall, columnar absorptive cells characterized by a microvilli brush border. Tight junctions between these enterocytes are crucial as they allow for the selective retention of absorbed substances.",
+                source: "Lower GI Histology PDF, Slide 12: 'Enterocytes - Absorptive cells - Tall, columnar cells... Tight junctions between the enterocytes allow selective retention of absorbed substance'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO2: Identify cell types of the small intestines that contribute the physiology of the small intestines (enterocytes, goblet cells, enterocytes, Paneth cells Enteroendocrine cells, M cells).",
+                question: "A medical student is examining histological slides from different regions of the small intestine. She notices a specific cell type interspersed among the enterocytes that appears pale and swollen at its apical end. The professor notes that these cells serve to protect and lubricate the intestinal lining and uniquely increase in number from the proximal to the distal small intestine. Which of the following cells is being described?",
+                options: {
+                    A: "Enteroendocrine cells",
+                    B: "Goblet cells",
+                    C: "M (microfold) cells",
+                    D: "Paneth cells",
+                    E: "Parietal cells"
+                },
+                correctAnswer: "B",
+                rationale: "Goblet cells are interspersed among enterocytes, secrete glycoprotein mucins to protect and lubricate the intestinal lining, and characteristically increase in number from the duodenum to the terminal ileum.",
+                source: "Lower GI Histology PDF, Slide 14: 'Goblet Cells - Interspersed among the enterocytes - Secrete glycoproteins mucins - Protect and lubricate the lining of the intestines - Increase in number from the duodenum to the terminal ileum'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO2: Identify cell types of the small intestines that contribute the physiology of the small intestines (enterocytes, goblet cells, enterocytes, Paneth cells Enteroendocrine cells, M cells).",
+                question: "A 30-year-old man undergoes an intestinal biopsy. Histological examination of the intestinal crypts (crypts of Lieberkühn) reveals exocrine cells located in the basal region containing prominent eosinophilic secretory granules. These cells are known to release lysozyme and phospholipase A. What is the primary function of these cells?",
+                options: {
+                    A: "Absorption of vitamin B12",
+                    B: "Production of alkaline mucus",
+                    C: "Regulation of the microenvironment via innate immunity",
+                    D: "Secretion of serotonin",
+                    E: "Transport of microorganisms to underlying lymphocytes"
+                },
+                correctAnswer: "C",
+                rationale: "Paneth cells are located at the base of the intestinal crypts, contain eosinophilic granules, and secrete antimicrobial agents (lysozyme, defensins, phospholipase A) that play an important role in innate immunity and regulating the crypt microenvironment.",
+                source: "Lower GI Histology PDF, Slide 15: 'Paneth Cells - Located in the basal region of the intestinal crypts... Eosinophilic secretory granules in the apical surface - Release lysozymes, phospholipase A, and defensins - Important role in innate immunity and in regulating the microenvironment of the intestinal crypts'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO2: Identify cell types of the small intestines that contribute the physiology of the small intestines (enterocytes, goblet cells, enterocytes, Paneth cells Enteroendocrine cells, M cells).",
+                question: "A specialized cell in the mucosa of the small intestine is identified using special staining techniques, as it is difficult to distinguish on standard H&E stain. The apical end of this cell contacts the lumen, and it is responsible for secreting various peptide hormones into the local vasculature to regulate digestive processes. Which of the following is the most likely cell type?",
+                options: {
+                    A: "Enterocyte",
+                    B: "Enteroendocrine cell",
+                    C: "Goblet cell",
+                    D: "M (microfold) cell",
+                    E: "Paneth cell"
+                },
+                correctAnswer: "B",
+                rationale: "Enteroendocrine cells secrete various peptide hormones, have an apical end that contacts the lumen, and are hard to distinguish without special stains.",
+                source: "Lower GI Histology PDF, Slide 16: 'Enteroendocrine cells - Secretes various peptide hormones - Apical end contacts the lumen - Hard to distinguish without a special stain'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO2: Identify cell types of the small intestines that contribute the physiology of the small intestines (enterocytes, goblet cells, enterocytes, Paneth cells Enteroendocrine cells, M cells).",
+                question: "A pathologist is examining Peyer's patches in a specimen of terminal ileum. Overlying these lymphoid nodules, specialized epithelial cells are identified that contain pockets on their basolateral surfaces housing lymphocytes and macrophages. These cells facilitate the transepithelial transport of particles. Which of the following cell types is this?",
+                options: {
+                    A: "Enterocyte",
+                    B: "Enteroendocrine cell",
+                    C: "Goblet cell",
+                    D: "M (microfold) cell",
+                    E: "Paneth cell"
+                },
+                correctAnswer: "D",
+                rationale: "M (microfold) cells are specialized for the transepithelial transport of particles and microorganisms. They feature a basolateral pocket containing lymphocytes and macrophages and overlie lymphoid follicles like Peyer's patches.",
+                source: "Lower GI Histology PDF, Slide 17: 'M (microfold) cells - Specialized for transepithelial transport of particles and microorganisms - Pocket formed on the basolateral surface ▻Contains lymphocytes and macrophages'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO3: Describe the histology of the large intestines. Identify the layers associated with the large intestines.",
+                question: "During an appendectomy, the surgeon traces the three thickened, longitudinal bands of smooth muscle on the surface of the cecum to locate the base of the appendix. Which of the following histological layers forms these specific longitudinal bands (taeniae coli)?",
+                options: {
+                    A: "Lamina propria",
+                    B: "Muscularis mucosae",
+                    C: "Outer layer of the muscularis externa",
+                    D: "Serosa",
+                    E: "Submucosa"
+                },
+                correctAnswer: "C",
+                rationale: "The muscularis of the large intestine consists of an inner circular layer and an outer longitudinal layer. The outer longitudinal layer forms the taeniae coli.",
+                source: "Lower GI Histology PDF, Slide 31: 'Large Intestines: Muscularis • Inner – circular • Outer – longitudinal - Forms the taenia coli'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO3: Describe the histology of the large intestines. Identify the layers associated with the large intestines.",
+                question: "A researcher is comparing histological sections of the jejunum and the descending colon. Which of the following morphological features is characteristically absent in the mucosa of the large intestine but present in the small intestine?",
+                options: {
+                    A: "Enteroendocrine cells",
+                    B: "Goblet cells",
+                    C: "Intestinal glands (crypts)",
+                    D: "Lamina propria",
+                    E: "Villi"
+                },
+                correctAnswer: "E",
+                rationale: "Unlike the small intestine, the mucosa of the large intestine completely lacks villi. It is, however, penetrated by intestinal glands (crypts).",
+                source: "Lower GI Histology PDF, Slide 27: 'Large Intestines: Mucosa • Lacks villi • Penetrated by intestinal glands'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO4: Identify the cell types of the large intestines that contribute the physiology of the large intestines.",
+                question: "A biopsy of the normal transverse colon is evaluated under light microscopy. The mucosal epithelium is noted to be simple columnar. Which of the following cell types is highly abundant in this epithelial lining, functioning primarily to lubricate the passage of increasingly desiccated feces?",
+                options: {
+                    A: "Enteroendocrine cells",
+                    B: "Goblet cells",
+                    C: "M cells",
+                    D: "Paneth cells",
+                    E: "Stratified squamous cells"
+                },
+                correctAnswer: "B",
+                rationale: "The large intestine mucosa is lined by abundant goblet cells and columnar absorptive cells. Goblet cells secrete mucus to lubricate the bowel.",
+                source: "Lower GI Histology PDF, Slide 28: 'Large Intestines: Mucosa • Lined by goblet cells and columnar absorptive cells'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO4: Identify the cell types of the large intestines that contribute the physiology of the large intestines.",
+                question: "A 55-year-old man is undergoing treatment for colon cancer. The oncologist explains that the intestinal epithelium rapidly turns over and regenerates from a specific population of cells that are highly vulnerable to radiation therapy. In the large intestine, these epithelial stem cells are primarily located in which of the following regions?",
+                options: {
+                    A: "Apical surface of the mucosa",
+                    B: "Bottom of the crypts",
+                    C: "Muscularis mucosae",
+                    D: "Submucosal nerve plexus",
+                    E: "Taeniae coli"
+                },
+                correctAnswer: "B",
+                rationale: "The epithelial stem cells responsible for regenerating the mucosal lining of the large intestine are located at the base (bottom) of the intestinal crypts.",
+                source: "Lower GI Histology PDF, Slide 29: 'Large Intestines: Mucosa • Epithelial stem cells are in the bottom of the crypts'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO5: Describe the histological transition that occurs at the rectoanal junction.",
+                question: "A 45-year-old woman is undergoing a colonoscopy. As the endoscope is slowly withdrawn through the distal rectum into the anal canal, a distinct transition in the epithelial lining is observed at the rectoanal junction. Which of the following best describes this histological transition?",
+                options: {
+                    A: "Simple columnar epithelium transitions to stratified squamous epithelium.",
+                    B: "Simple squamous epithelium transitions to pseudostratified columnar epithelium.",
+                    C: "Stratified columnar epithelium transitions to simple cuboidal epithelium.",
+                    D: "Stratified squamous epithelium transitions to simple columnar epithelium.",
+                    E: "Transitional epithelium transitions to simple columnar epithelium."
+                },
+                correctAnswer: "A",
+                rationale: "At the rectoanal junction, the simple columnar mucosal lining of the rectum abruptly changes to a stratified squamous epithelium in the anal canal.",
+                source: "Lower GI Histology PDF, Slide 37: 'Rectoanal Junction • Simple columnar mucosal lining of the rectum is replaced by stratified squamous epithelium'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO6: Describe the histology of the anal canal.",
+                question: "A 60-year-old man presents with fecal incontinence. Manometry studies reveal a profound weakness in his involuntary resting anal sphincter tone. The anatomical structure primarily responsible for maintaining this involuntary tone is formed by a thickening of which of the following histological layers?",
+                options: {
+                    A: "Circular layer of smooth muscle",
+                    B: "Longitudinal layer of skeletal muscle",
+                    C: "Longitudinal layer of smooth muscle",
+                    D: "Muscularis mucosae",
+                    E: "Outer striated muscle"
+                },
+                correctAnswer: "A",
+                rationale: "The internal anal sphincter provides involuntary control and is formed by a thickening of the circular layer of smooth muscle.",
+                source: "Lower GI Histology PDF, Slide 38: 'Anus • Circular layer forms the internal anal sphincter • Internal anal sphincter – involuntary - Smooth muscle'"
+            },
+            {
+                section: "Lower GI Histology",
+                fullLO: "LO6: Describe the histology of the anal canal.",
+                question: "During a surgical repair of a perianal fistula, the surgeon must carefully identify and preserve the voluntary sphincter surrounding the anal canal to prevent postoperative incontinence. Histological evaluation of this specific sphincter muscle would most likely reveal which of the following tissue types?",
+                options: {
+                    A: "Dense regular connective tissue",
+                    B: "Simple columnar epithelium",
+                    C: "Smooth muscle",
+                    D: "Stratified squamous epithelium",
+                    E: "Striated (skeletal) muscle"
+                },
+                correctAnswer: "E",
+                rationale: "The external anal sphincter is under voluntary control and is composed of striated (skeletal) muscle, in contrast to the internal anal sphincter which is composed of smooth muscle.",
+                source: "Lower GI Histology PDF, Slide 38: 'Anus... • External anal sphincter – voluntary - Straited muscle'"
+            },
+
+            // --- Section 2: Lower GI Pathology ---
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO1: Define selected congenital, vascular, acquired, and malabsorptive diseases of the lower GI tract.",
+                question: "A 68-year-old woman presents to the clinic with episodes of painless, intermittent hematochezia. A colonoscopy identifies the most common vascular abnormality of the gastrointestinal tract, characterized by acquired dilation of mucosal and submucosal venules. Which of the following best describes the underlying pathophysiology of this patient's condition?",
+                options: {
+                    A: "Atherosclerosis of the superior mesenteric artery",
+                    B: "Contraction of the muscularis propria occluding veins",
+                    C: "Increased intraabdominal pressure causing venous dilation",
+                    D: "Inflammation of mucosal outpouchings",
+                    E: "Telescoping of a proximal small bowel segment"
+                },
+                correctAnswer: "B",
+                rationale: "The patient's presentation and colonoscopy findings are characteristic of angiodysplasia, which is the most common vascular abnormality of the GI tract. Its pathophysiology involves the contraction of the muscularis propria, which occludes veins while arterial blood flow continues, resulting in the formation of arteriovenous collaterals and dilated vessels that are prone to bleeding.",
+                source: "Lower GI Pathology PDF, Slide 15: 'ANGIODYSPLASIA • Most common vascular abnormality of the GIT • Usually patients >60 years old • Acquired dilation of mucosal and submucosal venules and capillary beds... Pathophysiology: • Contraction of the muscularis propria occludes veins • Arterial blood flow continues • Formation of arteriovenous collaterals'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO1: Define selected congenital, vascular, acquired, and malabsorptive diseases of the lower GI tract.",
+                question: "A 75-year-old man with a history of severe coronary artery disease and peripheral vascular disease presents with sudden, severe crampy abdominal pain in the left upper quadrant occurring 30 minutes after eating. This is followed later that day by an episode of bloody diarrhea. A CT scan of the abdomen shows \"thumbprinting\" in the region of the splenic flexure. Which of the following best explains the predilection for this specific anatomic location?",
+                options: {
+                    A: "It is a watershed area where the SMA and IMA distributions meet.",
+                    B: "It is the most dependent portion of the colon.",
+                    C: "It is the narrowest portion of the colon, prone to obstruction.",
+                    D: "It is the primary site of dietary fat absorption.",
+                    E: "It represents a focal area of absent ganglion cells."
+                },
+                correctAnswer: "A",
+                rationale: "The patient has ischemic colitis, which most commonly affects the splenic flexure because it is a \"watershed\" area where the superior mesenteric artery (SMA) distribution ends and the inferior mesenteric artery (IMA) distribution begins, making it highly vulnerable to hypoperfusion.",
+                source: "Lower GI Pathology PDF, Slide 12: 'ISCHEMIC COLITIS... Usually at the splenic flexure • Watershed area • SMA distribution ends • IMA distribution starts'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO1: Define selected congenital, vascular, acquired, and malabsorptive diseases of the lower GI tract.",
+                question: "A 68-year-old woman with a history of chronic constipation presents to the emergency department with fever, leukocytosis, and severe left lower quadrant abdominal pain. A CT scan reveals inflammation surrounding multiple out-pouchings of the sigmoid colon wall, with a small localized fluid collection. What is the most likely diagnosis?",
+                options: {
+                    A: "Angiodysplasia",
+                    B: "Celiac disease",
+                    C: "Diverticulitis",
+                    D: "Intussusception",
+                    E: "Tropical sprue"
+                },
+                correctAnswer: "C",
+                rationale: "The patient's presentation of left lower quadrant pain, fever, and leukocytosis in the setting of known colonic outpouchings (diverticula) is classic for diverticulitis, which represents inflammation/obstruction of these acquired false diverticula.",
+                source: "Lower GI Pathology PDF, Slide 26: 'DIVERTICULITIS • Inflammation of the diverticula • Obstruction of diverticulum with fecal material • LEFT lower quadrant pain • Fever • Leukocytosis'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO1: Define selected congenital, vascular, acquired, and malabsorptive diseases of the lower GI tract.",
+                question: "A 35-year-old man of Northern European descent complains of chronic fatigue, bloating, and bulky, foul-smelling, floating stools. Laboratory tests reveal a microcytic anemia, and serology is positive for IgA antibodies to tissue transglutaminase (tTG). An upper GI endoscopy with duodenal biopsy is performed. Which of the following histological findings is most likely to be seen on the biopsy?",
+                options: {
+                    A: "Deep, knife-like transmural ulcers",
+                    B: "Foamy macrophages in the lamina propria containing PAS-positive granules",
+                    C: "Normal villous architecture with crypt abscesses",
+                    D: "Transmural necrosis of the bowel wall",
+                    E: "Villous atrophy and increased intraepithelial lymphocytes"
+                },
+                correctAnswer: "E",
+                rationale: "The patient has Celiac disease, an immune-mediated enteropathy triggered by gluten. A classic duodenal biopsy shows villous atrophy (flattening) and increased intraepithelial lymphocytes (mostly T cells).",
+                source: "Lower GI Pathology PDF, Slide 22: 'CELIAC DISEASE • Duodenal biopsy • Villous atrophy → loss of mucosal surface area • Increased lymphocytes in epithelium (mostly T cells)'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO2: Compare and contrast the clinicopathologic features, gross, and histologic findings of Crohn disease and ulcerative colitis.",
+                question: "A 28-year-old woman undergoes a colonoscopy for chronic, recurrent right lower quadrant abdominal pain, low-grade fever, and diarrhea. The endoscopist notes multiple, separate, sharply delineated areas of diseased mucosa alternating with completely normal-appearing bowel. A biopsy reveals transmural inflammation and noncaseating granulomas. Which of the following is the most likely diagnosis?",
+                options: {
+                    A: "Crohn disease",
+                    B: "Diverticulitis",
+                    C: "Ischemic colitis",
+                    D: "Pseudomembranous colitis",
+                    E: "Ulcerative colitis"
+                },
+                correctAnswer: "A",
+                rationale: "Crohn disease is characterized by \"skip lesions\" (discontinuous areas of disease), transmural inflammation, and the presence of noncaseating granulomas. It frequently involves the terminal ileum/cecum, presenting with right lower quadrant pain.",
+                source: "Lower GI Pathology PDF, Slides 31-32: 'CROHN DISEASE- GROSS PATHOLOGY... “Skip lesions” • Multiple, separate, sharply delineated areas of disease... CROHN DISEASE- MICROSCOPIC • May see noncaseating granulomas • Transmural inflammation'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO2: Compare and contrast the clinicopathologic features, gross, and histologic findings of Crohn disease and ulcerative colitis.",
+                question: "A 32-year-old man presents with frequent attacks of bloody diarrhea and left lower abdominal cramps. A colonoscopy demonstrates a continuous, red, granular mucosa extending proximally from the rectum to the splenic flexure. The remainder of the colon is entirely normal. Biopsies show inflammation strictly limited to the mucosa and superficial submucosa, with prominent crypt abscesses but no granulomas. Which of the following is a recognized severe complication specifically associated with the neuromuscular damage seen in this condition?",
+                options: {
+                    A: "Fistula formation between the bowel and bladder",
+                    B: "Noncaseating granulomas in mesenteric lymph nodes",
+                    C: "Stricture formation requiring resection",
+                    D: "Toxic megacolon",
+                    E: "Transmural bowel infarction"
+                },
+                correctAnswer: "D",
+                rationale: "The clinical and histological description (continuous involvement starting in the rectum, limited to mucosa/submucosa, crypt abscesses, bloody diarrhea) is classic for Ulcerative Colitis. A major complication of UC is toxic megacolon, resulting from damage to neuromuscular function leading to profound colonic dilation and risk of perforation.",
+                source: "Lower GI Pathology PDF, Slide 35: 'ULCERATIVE COLITIS- CLINICAL... Damage to neuromuscular function leads to colonic dilation • “Toxic Megacolon” = Markedly dilated, air-filled colon • Significant risk of perforation'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO3: Recognize the different types of colorectal polyps and their relationship to the development of malignancy.",
+                question: "A 60-year-old asymptomatic man undergoes a screening colonoscopy. The gastroenterologist identifies multiple small (~5 mm) polyps in the rectosigmoid region. Biopsy of these lesions shows hyperplasia of colonic glands with mature goblet and absorptive cells, displaying a classic serrated appearance confined to the upper portion (top) of the crypts. What is the malignant potential of these specific polyps?",
+                options: {
+                    A: "High potential; they require immediate colectomy.",
+                    B: "High potential; they rapidly progress to adenocarcinoma via the APC pathway.",
+                    C: "Moderate potential; they are associated with the DNA mismatch repair pathway.",
+                    D: "No malignant potential.",
+                    E: "Uncertain potential; dependent on the presence of the TCOF1 mutation."
+                },
+                correctAnswer: "D",
+                rationale: "The described lesions are hyperplastic polyps. They are common, small, located in the distal colon, have a serrated appearance at the top of the crypts, and critically, possess no malignant potential.",
+                source: "Lower GI Pathology PDF, Slide 41: 'HYPERPLASTIC POLYPS • Hyperplasia of colonic glands • Common • No malignant potential... Classically a serrated appearance on microscopy at the top'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO3: Recognize the different types of colorectal polyps and their relationship to the development of malignancy.",
+                question: "During a colonoscopy, a 1.5 cm pedunculated polyp is removed from the ascending colon of a 65-year-old woman. Pathologic examination reveals a tubulovillous architecture. The pathologist notes the presence of nuclear hyperchromasia, elongation (pencillate nuclei), and stratification. According to the pathologist, this lesion represents low-grade dysplasia. Which of the following best classifies this polyp?",
+                options: {
+                    A: "Adenoma",
+                    B: "Hyperplastic polyp",
+                    C: "Inflammatory pseudopolyp",
+                    D: "Juvenile polyp",
+                    E: "Peutz-Jeghers polyp"
+                },
+                correctAnswer: "A",
+                rationale: "Adenomas are neoplastic polyps that, by definition, represent low-grade dysplasia (characterized by nuclear hyperchromasia, elongation, and stratification) and serve as precursors to colorectal cancer. They can have tubular, villous, or tubulovillous morphologies.",
+                source: "Lower GI Pathology PDF, Slides 42 & 45: 'ADENOMAS • Variety of morphologies: tubular, villous, or tubulovillous • By definition, represents low grade dysplasia • Precursor for colorectal cancer... Low grade dysplasia: Nuclear hyperchromasia, elongation (pencillate nuclei) and stratification'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO4: Discuss the molecular pathogenesis of colorectal carcinoma and association with various tumor syndromes.",
+                question: "A 16-year-old boy presents with hematochezia. A colonoscopy is performed and reveals hundreds of polyps carpeting the entire colon and rectum. His father died of colon cancer at age 42. The gastroenterologist recommends a prophylactic colectomy. This patient's condition is most likely caused by a germline mutation in which of the following genes/pathways?",
+                options: {
+                    A: "APC gene (Chromosomal instability pathway)",
+                    B: "DNA mismatch repair genes (MLH1, MSH2)",
+                    C: "HTT gene",
+                    D: "TCOF1 gene",
+                    E: "Tropheryma whipplei"
+                },
+                correctAnswer: "A",
+                rationale: "Familial Adenomatous Polyposis (FAP) presents with 100s-1000s of adenomatous polyps in young patients (starting around 10-12 years). It is caused by a germline mutation in the APC gene (the chromosomal instability or APC/beta-catenin pathway) and almost universally progresses to cancer without a prophylactic colectomy.",
+                source: "Lower GI Pathology PDF, Slides 49 & 60: 'FAP 100s-1000s of polyps... Prophylactic colectomy between 15-25 years old... TWO PATHWAYS TO COLORECTAL CARCINOMA • Adenomatous polyposis coli gene (APC) mutations... Germline: Familial Adenomatous Polyposis'"
+            },
+            {
+                section: "Lower GI Pathology",
+                fullLO: "LO4: Discuss the molecular pathogenesis of colorectal carcinoma and association with various tumor syndromes.",
+                question: "A 45-year-old woman develops a right-sided colorectal carcinoma. She has a strong family history of both early-onset colon cancer and endometrial cancer, but her colonoscopy shows only a single sessile serrated adenoma in addition to the carcinoma, rather than polyposis. Molecular analysis of her tumor cells demonstrates microsatellite instability. Which of the following is the most likely underlying genetic defect in this patient?",
+                options: {
+                    A: "Germline mutation in the APC gene",
+                    B: "Germline mutation in DNA mismatch repair enzymes",
+                    C: "Homozygous loss of the p53 tumor suppressor gene",
+                    D: "Insufficient migration of neural crest cells",
+                    E: "Translocation of the BCR-ABL gene"
+                },
+                correctAnswer: "B",
+                rationale: "Lynch syndrome (Hereditary Nonpolyposis Colorectal Cancer, HNPCC) is characterized by a high risk of colorectal (predominantly right-sided) and endometrial carcinomas, without the thousands of polyps seen in FAP. It is caused by germline mutations in DNA mismatch repair (MMR) proteins (e.g., MLH1, MSH2), leading to microsatellite instability.",
+                source: "Lower GI Pathology PDF, Slides 55 & 60: 'LYNCH SYNDROME/ HNPCC... Germline mutation in mismatch repair (MMR) proteins: MLH1, PMS2, MSH2, MSH6... TWO PATHWAYS TO COLORECTAL CARCINOMA... Germline: Hereditary nonpolyposis colorectal carcinoma (HNPCC), inherited mutations in DNA mismatch repair enzymes'"
+            },
+
+            // --- Section 3: Protozoal Infections and Helminths ---
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO1: Outline the life cycles of the following protozoa: Giardia duodenalis, Cryptosporidium parvum, Entamoeba histolytica, Toxoplasma gondii.",
+                question: "A 22-year-old male develops foul-smelling, floating stools and flatulence two weeks after a camping trip in the Rocky Mountains. He admits to drinking water directly from a mountain stream without boiling or filtering it. Infection with the causative organism is initiated by the ingestion of which of the following stages of its life cycle?",
+                options: {
+                    A: "Bradyzoite",
+                    B: "Cyst",
+                    C: "Filariform larva",
+                    D: "Rhabditiform larva",
+                    E: "Trophozoite"
+                },
+                correctAnswer: "B",
+                rationale: "The life cycle of Giardia duodenalis begins with the ingestion of cysts from fecally-contaminated food, water, or hands.",
+                source: "Protozoal Infections and Helminths Handout, Page 1: 'Giardia duodenalis... Life cycle: 1. Ingestion of cyst from fecally-contaminated food, water & hands'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO1: Outline the life cycles of the following protozoa: Giardia duodenalis, Cryptosporidium parvum, Entamoeba histolytica, Toxoplasma gondii.",
+                question: "An outbreak of voluminous, watery diarrhea occurs at a local daycare center. Stool samples from affected children are subjected to an acid-fast stain, which reveals numerous red-pink structures. During the life cycle of this specific pathogen within the human host, which of the following directly invades the small bowel epithelium leading to continued diarrhea?",
+                options: {
+                    A: "Filariform larvae",
+                    B: "Microgametocytes",
+                    C: "Sporozoites released from thin-walled oocysts",
+                    D: "Tachyzoites",
+                    E: "Trophozoites released from thick-walled oocysts"
+                },
+                correctAnswer: "C",
+                rationale: "In the life cycle of Cryptosporidium parvum, thin-walled oocysts rupture within the host, releasing sporozoites that invade the small bowel epithelium and cause continuous autoinfection and diarrhea. Thick-walled oocysts are excreted in the feces to spread in nature.",
+                source: "Protozoal Infections and Helminths Handout, Page 2: 'Cryptosporidium parvum... Life cycle: ... 3. Thin-walled oocyst releases sporozoites to invade sm. bowel epithelium → diarrhea continues 4. Thick-walled oocyst spreads in nature'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO1: Outline the life cycles of the following protozoa: Giardia duodenalis, Cryptosporidium parvum, Entamoeba histolytica, Toxoplasma gondii.",
+                question: "A 35-year-old man returns from a trip to a developing country and develops bloody diarrhea and right upper quadrant abdominal pain. Stool microscopy confirms an invasive amebic parasite. After the patient ingests the infectious cyst from contaminated food or water, what immediately emerges from the cyst within the host's intestinal tract?",
+                options: {
+                    A: "4 nucleated oocysts",
+                    B: "8 ameba trophozoites",
+                    C: "Filariform larvae",
+                    D: "Microgametes",
+                    E: "Rhabditiform larvae"
+                },
+                correctAnswer: "B",
+                rationale: "In the life cycle of Entamoeba histolytica, following the ingestion of the cyst, the cyst divides and releases 8 ameba trophozoites in the intestinal tract.",
+                source: "Protozoal Infections and Helminths Handout, Pages 2-3: 'Entamoeba histolytica... Life cycle: 1. Cyst → 8 ameba trophozoite'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO1: Outline the life cycles of the following protozoa: Giardia duodenalis, Cryptosporidium parvum, Entamoeba histolytica, Toxoplasma gondii.",
+                question: "A pregnant woman brings her cat to the veterinarian and asks about the risk of toxoplasmosis. The veterinarian explains the parasite's life cycle, noting that the feline is the definitive host. In order for the parasite to complete its life cycle and produce infective oocysts that are shed in the feces, which of the following must occur?",
+                options: {
+                    A: "The cat inhales aerosolized rhabditiform larvae from soil.",
+                    B: "The cat ingests tissue cysts containing bradyzoites from infected animals (e.g., mice).",
+                    C: "A mosquito transmits the sporozoite into the cat's bloodstream.",
+                    D: "Filariform larvae penetrate the cat's soft footpads.",
+                    E: "The cat ingests free-living adult worms from the soil."
+                },
+                correctAnswer: "B",
+                rationale: "The definitive host for Toxoplasma gondii is the cat. The life cycle in cats is completed when the cat ingests tissue cysts (containing bradyzoites) from infected prey, such as mice. The parasite then invades the cat's intestine, undergoes sexual reproduction, and sheds oocysts.",
+                source: "Protozoal Infections and Helminths Slides, Slide 25: 'Toxoplasma gondii (life cycle in cats) [Flowchart showing:] cats ingest tissue cyst from infected animals (eg mice) -> bradyzoite -> ... invades cat intestine → completes life cycle -> oocyst'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO2: Outline the life cycles of the following helminths: Enterobius vermicularis, Trichuris trichiura, Ascaris lumbricoides & Toxicara canis, Necatur americanus & Ancylostoma duodenale, Strongyloides stercoralis.",
+                question: "A 5-year-old girl is brought to the pediatrician because of intense perianal itching, especially at night. Her mother performed a cellophane tape test, which revealed the presence of eggs. According to the life cycle of this pathogen, which of the following causes the intense pruritus ani?",
+                options: {
+                    A: "Adult female worms migrating to the anal mucosa to lay eggs",
+                    B: "Filariform larvae penetrating the perianal skin",
+                    C: "Larvae migrating through the lungs and causing an allergic response",
+                    D: "Trophozoites invading the colonic crypts",
+                    E: "Unhatched eggs burrowing into the submucosa"
+                },
+                correctAnswer: "A",
+                rationale: "Enterobius vermicularis (pinworm) has a life cycle where ingested eggs hatch in the stomach and migrate to the colon. Adult male and female worms mate, and the gravid female worm migrates to the anal mucosa (usually at night) to lay eggs, which causes the classic symptom of pruritus ani.",
+                source: "Protozoal Infections and Helminths Handout, Page 4: 'Enterobius vermicularis (pinworm)... Life cycle 1. Ingestion of egg... 2. Egg hatches in stomach → colon; male & female worms mate → female worm → anal mucosa to lay eggs → pruritic ani (main Sx)'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO2: Outline the life cycles of the following helminths: Enterobius vermicularis, Trichuris trichiura, Ascaris lumbricoides & Toxicara canis, Necatur americanus & Ancylostoma duodenale, Strongyloides stercoralis.",
+                question: "A 7-year-old boy living in a rural area presents with vague abdominal symptoms and failure to thrive. Stool examination demonstrates barrel-shaped eggs with bipolar plugs. The organism responsible for this infection completes its life cycle entirely within the human gastrointestinal tract. After hatching in the stomach and moving to the colon, how do the adult worms anchor themselves to the host?",
+                options: {
+                    A: "By attaching to the mucosa via a ventral sucking disk",
+                    B: "By penetrating the skin of the feet and migrating to the colon",
+                    C: "By secreting a dense glycocalyx capsule",
+                    D: "By sewing their thin anterior end into colonic crypts",
+                    E: "By utilizing large biting plates to grasp the villi"
+                },
+                correctAnswer: "D",
+                rationale: "Trichuris trichiura (whipworm) adults attach to the host by sewing their thin, whip-like anterior end directly into the colonic crypts.",
+                source: "Protozoal Infections and Helminths Handout, Pages 4-5: 'Trichuris trichiura (whipworm)... Life cycle:... 2. Egg hatches in stomach → colon → adult; sews thin ant end into colonic crypts'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO2: Outline the life cycles of the following helminths: Enterobius vermicularis, Trichuris trichiura, Ascaris lumbricoides & Toxicara canis, Necatur americanus & Ancylostoma duodenale, Strongyloides stercoralis.",
+                question: "A 10-year-old boy presents to the clinic with fever, wheezing, and a dry cough. His mother mentions that two weeks ago he was playing in soil contaminated with human feces (\"night soil\"). Blood work shows profound eosinophilia. The physician suspects an infection with a parasite that requires an extraintestinal cycle. Which of the following best describes the migration pathway of this pathogen's larvae before they become adult worms in the intestines?",
+                options: {
+                    A: "They invade the biliary tree and mature in the gallbladder.",
+                    B: "They invade the small intestine, enter the bloodstream, migrate to the lungs where they molt, and are then coughed up and swallowed.",
+                    C: "They penetrate the skin of the feet, enter the lymphatics, and mature in regional lymph nodes.",
+                    D: "They travel via the portal vein directly to the liver and form large cysts.",
+                    E: "They travel via the spinal fluid to the central nervous system."
+                },
+                correctAnswer: "B",
+                rationale: "The life cycle of Ascaris lumbricoides involves eggs being ingested, larvae hatching and invading the small intestine, traveling via the bloodstream to the lungs (where they molt twice), and then being coughed up and swallowed to finally mature into adults in the gut.",
+                source: "Protozoal Infections and Helminths Handout, Page 5: 'Ascaris lumbricoides... Life cycle: 1. Egg ingested from fecally-contaminated soil... 2. Larva released → invades sm. intestine → bloodstream → lungs (larvae molt 2x) → coughed up & swallowed → adult worms → feed on ingested food'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO2: Outline the life cycles of the following helminths: Enterobius vermicularis, Trichuris trichiura, Ascaris lumbricoides & Toxicara canis, Necatur americanus & Ancylostoma duodenale, Strongyloides stercoralis.",
+                question: "A peace corps volunteer working barefoot in a moist, shaded agricultural area develops a highly pruritic, erythematous rash between his toes (ground itch). Several weeks later, he begins to feel fatigued and is found to have a microcytic, hypochromic anemia. The parasite responsible for these symptoms initiates human infection through which of the following mechanisms?",
+                options: {
+                    A: "Filariform larvae penetrate the soft skin between the toes.",
+                    B: "Ingestion of cysts from contaminated water.",
+                    C: "Ingestion of embryonated eggs from the soil.",
+                    D: "Mosquito bite injecting sporozoites into the bloodstream.",
+                    E: "Rhabditiform larvae are ingested via contaminated food."
+                },
+                correctAnswer: "A",
+                rationale: "Hookworms (Ancylostoma duodenale & Necator americanus) infect humans when filariform larvae from the soil directly penetrate intact soft skin (often between the toes of barefoot individuals), causing \"ground itch\" before migrating to the lungs and eventually the gut.",
+                source: "Protozoal Infections and Helminths Handout, Page 6: 'Ancylostoma duodenale & Necator americanus (hookworms)... Life cycle: 1. Eggs from fecally-contaminated soil hatch in soil → rhabditiform larvae → filariform larvae → penetrate soft skin between toes of barefoot person → circulation → lungs → coughed up & swallowed'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO2: Outline the life cycles of the following helminths: Enterobius vermicularis, Trichuris trichiura, Ascaris lumbricoides & Toxicara canis, Necatur americanus & Ancylostoma duodenale, Strongyloides stercoralis.",
+                question: "A patient with a history of lymphoma is started on high-dose corticosteroid therapy. Two weeks later, he develops severe abdominal pain, a pruritic rash, and rapidly progresses to bacterial sepsis with E. coli. The infectious disease specialist suspects hyperinfection syndrome from a previously dormant parasite. Which of the following unique aspects of this parasite's life cycle allows it to cause massive autoinfection and transport gut bacteria into the bloodstream?",
+                options: {
+                    A: "Eggs hatch directly into filariform larvae within the stomach.",
+                    B: "Filariform larvae in the gut penetrate the intestinal mucosa, bringing fecal bacteria with them as they enter the bloodstream.",
+                    C: "Rhabditiform larvae encyst in the liver and rupture during immunosuppression.",
+                    D: "Tissue cysts containing bradyzoites rupture, releasing rapidly dividing tachyzoites.",
+                    E: "Trophozoites produce a phospholipase that melts the colonic wall."
+                },
+                correctAnswer: "B",
+                rationale: "Strongyloides stercoralis has a unique autoinfection cycle. In immunocompromised patients, rhabditiform larvae in the gut molt into infective filariform larvae before leaving the body. These filariform larvae penetrate the gut mucosa, carrying fecal bacteria (like E. coli) with them into the bloodstream, causing Gram-negative sepsis.",
+                source: "Protozoal Infections and Helminths Handout, Page 7: 'Strongyloides stercoralis... Life cycle:... 3. Immunocompromised patient—filariform larvae → rhabditiform larvae in gut → invasive infection... a. Filariform larvae penetrating gut coated with feces → gut bacteria in bloodstream (ie spontaneous E. coli bacteremia & sepsis)'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO3: Summarize the most common clinical findings in the above parasites.",
+                question: "A 37-year-old man presents to the clinic with right upper quadrant pain, fever, and right lower lobe pneumonia. He mentions having a bout of bloody diarrhea and tenesmus a few weeks ago that he thought resolved. Imaging reveals a large liver abscess. Aspiration of the abscess yields a reddish-brown fluid resembling anchovy paste. Which of the following organisms is the most likely cause of this patient's clinical findings?",
+                options: {
+                    A: "Ascaris lumbricoides",
+                    B: "Cryptosporidium parvum",
+                    C: "Entamoeba histolytica",
+                    D: "Giardia duodenalis",
+                    E: "Toxocara canis"
+                },
+                correctAnswer: "C",
+                rationale: "Entamoeba histolytica classically causes amebic dysentery (colicky pain, frequent blood-tinged mucoid stools, tenesmus). The trophozoites can occasionally enter the portal circulation and cause an amebic liver abscess, presenting with RUQ pain, fever, and contiguous right lower lobe (RLL) pneumonia.",
+                source: "Protozoal Infections and Helminths Handout, Page 3: 'Entamoeba histolytica... Clinical findings:... 2. Colicky hypogastric pain → frequent small-volume, blood-tinged, mucoid stools 3. Tenesmus... 5. Occasionally enter portal circulation → liver abscess with RUQ pain & tenderness, fever... 6. RLL pneumonia (contiguous with liver abscess)'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO3: Summarize the most common clinical findings in the above parasites.",
+                question: "A 4-year-old boy is brought to the pediatrician because of a persistent fever, a dry cough, and wheezing. His mother states he frequently plays in a local sandbox where neighborhood dogs are known to defecate. Laboratory testing reveals striking eosinophilia and hyperglobulinemia. The child subsequently develops blurred vision, and an ophthalmologic exam reveals an ocular lesion. What is the most likely diagnosis?",
+                options: {
+                    A: "Cryptosporidiosis",
+                    B: "Enterobiasis",
+                    C: "Hookworm disease",
+                    D: "Toxoplasmosis",
+                    E: "Visceral larva migrans (Toxocara canis)"
+                },
+                correctAnswer: "E",
+                rationale: "Toxocara canis (dog ascarid) causes visceral larva migrans when eggs are ingested from soil. The larvae migrate indiscriminately through various organs (lungs, liver, eyes) but cannot complete their life cycle in humans. Clinical findings include fever, cough/wheezing, marked eosinophilia, and ocular lesions (ocular toxicariasis) leading to blurred vision.",
+                source: "Protozoal Infections and Helminths Handout, Page 6: 'Toxcara canis (cat variant, T. cati)—dog or cat ascarid... Clinical manifestations: 1. Fever 2. Abdominal discomfort 3. Cough, dyspnea, wheezing 4. Urticaria 5. Blurred vision (ocular lesions) Dx: 1. ↑ WBC with eosinophilia'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO4: Provide the treatment of choice for each of the above parasites.",
+                question: "A 27-year-old woman with advanced AIDS is hospitalized for intractable, watery diarrhea (8-10 voluminous stools per day). An acid-fast stain of her stool is positive for oocysts. Which of the following is the most appropriate targeted pharmacotherapy for this infection?",
+                options: {
+                    A: "Albendazole",
+                    B: "Ivermectin",
+                    C: "Mebendazole",
+                    D: "Nitazoxanide",
+                    E: "Pyrimethamine plus sulfadiazine"
+                },
+                correctAnswer: "D",
+                rationale: "The patient has cryptosporidiosis (watery diarrhea in an AIDS patient, acid-fast positive oocysts). The treatment of choice is nitazoxanide, which interferes with electron transport.",
+                source: "Protozoal Infections and Helminths Handout, Page 2: 'Cryptosporidium parvum... Clinical findings: 1. Watery diarrhea (intermittent, continuous, voluminous—esp in AIDS)... Dx: 1. Acid-fast stain of stool for oocysts... Rx: nitazoxanide (interferes with e- transport; prevents formation of acetyl CoA)'"
+            },
+            {
+                section: "Protozoal Infections and Helminths",
+                fullLO: "LO4: Provide the treatment of choice for each of the above parasites.",
+                question: "A 50-year-old immigrant from South America is diagnosed with Strongyloides stercoralis after a stool exam demonstrates rhabditiform larvae. The physician decides to prescribe the drug of choice for this infection, which works by binding to chloride channels and locking them in the open position, causing hyperpolarization and paralysis of the worm's muscles. Which of the following medications was prescribed?",
+                options: {
+                    A: "Ivermectin",
+                    B: "Mebendazole",
+                    C: "Metronidazole",
+                    D: "Tinidazole",
+                    E: "Topical thiabendazole"
+                },
+                correctAnswer: "A",
+                rationale: "The treatment of choice for strongyloidiasis is ivermectin. Its mechanism of action involves binding to chloride channels and locking them open, leading to hyperpolarization and paralysis of the worm.",
+                source: "Protozoal Infections and Helminths Handout, Page 8: 'Strongyloides stercoralis... Rx: 1. Ivermectin (binds to chloride channels & locks them in open position → hyperpolarization & paralysis of worm muscles & nerves)'"
+            },
+
+            // --- Section 4: Water Soluble Vitamins ---
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO1: Define and classify vitamins.",
+                question: "A medical student is studying human nutrition and reviews the biochemical definition of vitamins. Which of the following statements best describes the defining metabolic characteristic of all vitamins in the human body?",
+                options: {
+                    A: "They are organic compounds that serve primarily as metabolic fuels for ATP production.",
+                    B: "They are synthesized endogenously in trace amounts to maintain cellular integrity.",
+                    C: "They are metabolically essential organic compounds that cannot be synthesized in adequate amounts by the body and are not metabolic fuels.",
+                    D: "They are strictly coenzymes that participate exclusively in redox reactions.",
+                    E: "They are inorganic trace minerals required for fundamental physiological functions."
+                },
+                correctAnswer: "C",
+                rationale: "Vitamins are a heterogeneous group of organic compounds that cannot be synthesized by the human body. They are needed in trace amounts and are metabolically essential, but they do not serve as metabolic fuels.",
+                source: "Water Soluble Vitamins PDF, Page 3: 'Definition... A heterogeneous group of organic compounds that cannot be synthesized and are needed in trace amounts... All are metabolically essential but are not metabolic fuels'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO1: Define and classify vitamins.",
+                question: "Vitamins are broadly classified into two major categories based on a specific physicochemical property. This property fundamentally dictates their dietary source, digestive and absorptive pathway, processing, and potential for storage within the body. Which of the following properties is used to classify vitamins into these two major groups?",
+                options: {
+                    A: "Molecular weight",
+                    B: "Presence of a corrin ring",
+                    C: "Redox potential",
+                    D: "Solubility in fat versus water",
+                    E: "Thermostability"
+                },
+                correctAnswer: "D",
+                rationale: "Vitamins are classified as either fat-soluble or water-soluble. This solubility affects where they are obtained in the diet, how they are digested/absorbed, and how they are stored in the body.",
+                source: "Water Soluble Vitamins PDF, Page 5: 'Classification... Solubility of the vitamins affects the dietary source that they are obtained from, the way that they get affected in the food preparation process, the way they get digested and absorbed from the diet... and if, how, and where it can be stored in the body.'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO2: Compare and contrast the general characteristics of fat- and water- soluble vitamins and discuss how solubility influences partitioning of these vitamins in the human body.",
+                question: "A 45-year-old woman decides to start taking massive doses of over-the-counter vitamin supplements to improve her energy levels. She is advised by her physician that excessive intake of certain vitamins can lead to severe toxicity due to their accumulation in the liver and adipose tissue, while others are generally safer because excesses are readily excreted. Which of the following vitamins is most likely to be readily excreted in the urine without causing known toxic effects when taken in excess?",
+                options: {
+                    A: "Vitamin A",
+                    B: "Vitamin C",
+                    C: "Vitamin D",
+                    D: "Vitamin E",
+                    E: "Vitamin K"
+                },
+                correctAnswer: "B",
+                rationale: "Vitamin C is a water-soluble vitamin. A general characteristic of water-soluble vitamins (with the notable exception of Vitamin B6/pyridoxine) is that they are not stored in the body and excess is readily excreted in the urine, resulting in no known toxic effects. Fat-soluble vitamins (A, D, E, K) are stored in the liver and adipose tissue and can cause toxicity.",
+                source: "Water Soluble Vitamins PDF, Page 6: 'General Characteristics of Fat- & Water- Soluble Vitamins... Water-soluble: Excess not stored in any tissue (except B12)... Excess lost in urine, no toxicity'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO2: Compare and contrast the general characteristics of fat- and water- soluble vitamins and discuss how solubility influences partitioning of these vitamins in the human body.",
+                question: "A patient with chronic pancreatitis develops exocrine pancreatic insufficiency, leading to profound steatorrhea and fat malabsorption. Due to this condition, the patient is at highest risk for developing a deficiency in which of the following vitamins?",
+                options: {
+                    A: "Ascorbic acid",
+                    B: "Biotin",
+                    C: "Folate",
+                    D: "Niacin",
+                    E: "Vitamin K"
+                },
+                correctAnswer: "E",
+                rationale: "Vitamin K is a fat-soluble vitamin. Fat-soluble vitamins require dietary fat, bile salts, and pancreatic lipase for absorption in the small intestine. Patients with fat malabsorption (steatorrhea) are at high risk for deficiencies in fat-soluble vitamins (A, D, E, K). Water-soluble vitamins (like C, Biotin, Folate, Niacin) are absorbed independently of dietary fat.",
+                source: "Water Soluble Vitamins PDF, Page 6: 'General Characteristics of Fat- & Water- Soluble Vitamins... Fat-soluble: Absorbed with dietary fat in the small intestine - requires bile salts, pancreatic lipase, and dietary lipids... Deficiency associated with fat malabsorption'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO3: Identify the active/coenzyme form and describe each of the following for common water-soluble vitamins: main function, deficiency symptoms, risk factors, dietary sources, and recommended daily intake.",
+                question: "An emaciated 40-year-old man with a 20-year history of severe alcohol abuse is brought to the emergency department in a confused state. Examination shows severely restricted horizontal eye movements (nystagmus and ophthalmoplegia) and a wide-based, ataxic gait. The physician orders an immediate intravenous infusion of a specific vitamin before giving the patient any glucose. Administration of glucose without this vitamin could precipitate severe lactic acidosis and death due to the failure of which of the following enzymes?",
+                options: {
+                    A: "Acetyl-CoA carboxylase",
+                    B: "Dihydrofolate reductase",
+                    C: "Glycogen phosphorylase",
+                    D: "Methylmalonyl-CoA mutase",
+                    E: "Pyruvate dehydrogenase"
+                },
+                correctAnswer: "E",
+                rationale: "The patient has Wernicke-Korsakoff syndrome due to a deficiency in Vitamin B1 (Thiamine). Thiamine (as TPP) is a required cofactor for pyruvate dehydrogenase (PDH). If glucose is given without thiamine, pyruvate cannot be converted to acetyl-CoA by PDH, and instead is shunted to lactate, causing severe, potentially fatal lactic acidosis.",
+                source: "Water Soluble Vitamins PDF, Page 38: 'WKS is a medical emergency, IV thiamine should be administered before IV glucose... If glucose is injected before thiamine it could result in severe lactic acidosis and death of the patient. This is because the patient cannot oxidize pyruvate produced from glucose to acetyl-CoA (thiamine is a co-enzyme for PDH) and the pyruvate gets converted to lactate'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO3: Identify the active/coenzyme form and describe each of the following for common water-soluble vitamins: main function, deficiency symptoms, risk factors, dietary sources, and recommended daily intake.",
+                question: "A 35-year-old refugee whose diet consists almost entirely of corn presents with a pigmented, scaly, sunburn-like rash on his sun-exposed skin. He also complains of chronic diarrhea and appears apathetic and confused. His symptoms are determined to be caused by a deficiency of a vitamin that serves as a precursor for NAD+ and NADP+. The human body can synthesize small amounts of this vitamin from which of the following essential amino acids?",
+                options: {
+                    A: "Histidine",
+                    B: "Lysine",
+                    C: "Methionine",
+                    D: "Phenylalanine",
+                    E: "Tryptophan"
+                },
+                correctAnswer: "E",
+                rationale: "The patient has pellagra (characterized by the 3 D's: Dermatitis, Diarrhea, Dementia), caused by a deficiency in Vitamin B3 (Niacin). While primarily obtained from the diet, the human body can synthesize small amounts of niacin from the essential amino acid tryptophan.",
+                source: "Water Soluble Vitamins PDF, Pages 40 & 43: 'Niacin – Vitamin B3... Synthesized from tryptophan... Deficiency causes a condition called pellagra. Symptoms of pellagra progresses through “three D’s” dermatitis... diarrhea... dementia'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO3: Identify the active/coenzyme form and describe each of the following for common water-soluble vitamins: main function, deficiency symptoms, risk factors, dietary sources, and recommended daily intake.",
+                question: "A 70-year-old man living alone is admitted to the hospital with fatigue, extensive ecchymoses, perifollicular petechiae, and swollen, bleeding gums. He admits his diet for the past two years has consisted entirely of hot dogs and diet cola. His symptoms are due to a deficiency of a vitamin that acts as a cofactor for enzymes required for the synthesis of which of the following structural proteins?",
+                options: {
+                    A: "Collagen",
+                    B: "Elastin",
+                    C: "Fibrillin",
+                    D: "Fibronectin",
+                    E: "Keratin"
+                },
+                correctAnswer: "A",
+                rationale: "The patient has scurvy due to Vitamin C (ascorbate) deficiency. Vitamin C is a required cofactor for proline and lysine hydroxylases, which are essential enzymes for the proper synthesis and cross-linking of collagen. Defective collagen synthesis leads to tissue and capillary fragility (bleeding gums, petechiae).",
+                source: "Water Soluble Vitamins PDF, Pages 28-29: 'Vitamin C – Function 1. Cofactor for oxidases, mono-oxygenases, di-oxygenases & hydroxylases • Hydroxylation of proline and lysine in collagen... Vitamin C – Deficiency • Scurvy; symptoms associated with low iron levels & collagen synthesis... Spongy and bleeding gums'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO3: Identify the active/coenzyme form and describe each of the following for common water-soluble vitamins: main function, deficiency symptoms, risk factors, dietary sources, and recommended daily intake.",
+                question: "A 28-year-old woman who is trying to conceive visits her obstetrician for preconception counseling. The physician strongly recommends she begin taking a daily supplement of 0.6 mg of a specific water-soluble vitamin. The active form of this vitamin is tetrahydrofolate (THF). Adequate intake of this vitamin during the early stages of pregnancy is critical to reduce the risk of which of the following fetal anomalies?",
+                options: {
+                    A: "Cataracts",
+                    B: "Congenital heart defects",
+                    C: "Neural tube defects",
+                    D: "Pyloric stenosis",
+                    E: "Renal agenesis"
+                },
+                correctAnswer: "C",
+                rationale: "Folate (Vitamin B9) supplementation (0.6 mg/day) during the periconceptional period and early stages of pregnancy is essential to substantially reduce the risk of neural tube defects (NTDs) in the developing fetus.",
+                source: "Water Soluble Vitamins PDF, Page 12: 'Folate – Prenatal Supplementation & NTDs • Folate deficiency during early stages of pregnancy can result in NTDs... Folate supplements of 0.6 mg/day during periconceptional period'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO4: Explain the process involved in the intestinal absorption of vitamin B12 and the symptoms, pathophysiology, and management of pernicious anemia.",
+                question: "A 65-year-old woman with Hashimoto thyroiditis presents with progressively worsening fatigue, numbness, and a tingling sensation in her hands and feet. Laboratory evaluation reveals a macrocytic anemia and elevated serum levels of methylmalonic acid. She is diagnosed with pernicious anemia. The underlying pathophysiology of this specific disorder is the autoimmune destruction of the gastric parietal cells, resulting in a critical lack of which of the following proteins?",
+                options: {
+                    A: "Biotinidase",
+                    B: "Haptocorrin (R protein)",
+                    C: "Intrinsic factor",
+                    D: "Pepsin",
+                    E: "Transcobalamin II"
+                },
+                correctAnswer: "C",
+                rationale: "Pernicious anemia is a specific form of Vitamin B12 deficiency caused by the autoimmune destruction of gastric parietal cells, which normally secrete intrinsic factor. Without intrinsic factor, Vitamin B12 cannot be efficiently absorbed in the terminal ileum.",
+                source: "Water Soluble Vitamins PDF, Page 19: 'Vitamin B12 – Pernicious Anemia (autoimmune atrophic gastritis) • The most frequent cause of severe vitamin B12 deficiency due to loss of intrinsic factor • Atrophic gastric mucosa, autoimmunity against gastric parietal cells or intrinsic factor'"
+            },
+            {
+                section: "Water Soluble Vitamins",
+                fullLO: "LO4: Explain the process involved in the intestinal absorption of vitamin B12 and the symptoms, pathophysiology, and management of pernicious anemia.",
+                question: "A 60-year-old vegan male develops megaloblastic anemia and hyperhomocysteinemia. The physician is trying to determine whether the patient has an isolated folate deficiency or a Vitamin B12 deficiency. Treating a Vitamin B12 deficiency with folate supplements alone can correct the megaloblastic anemia but will allow irreversible damage to continue in which of the following organ systems?",
+                options: {
+                    A: "Cardiovascular system",
+                    B: "Gastrointestinal system",
+                    C: "Hepatic system",
+                    D: "Nervous system",
+                    E: "Renal system"
+                },
+                correctAnswer: "D",
+                rationale: "Treating B12 deficiency with folate alone will correct the anemia (by overcoming the \"folate trap\" and allowing DNA synthesis to proceed) but it will not correct the deficiency in methylmalonyl-CoA mutase. The resulting accumulation of methylmalonic acid leads to progressive, irreversible neurological damage (demyelination).",
+                source: "Water Soluble Vitamins PDF, Page 18: 'Treatment of megaloblastic anemia with folate alone should never be done. This is because, with excess folate supplementation, deficiency in nucleotide synthesis may be overcome. This will result in normal rate of DNA replication and cell cycle to take place, thus overcoming anemia... Thus, there is an increased risk of precipitating severe and irreversible vascular and neurological deficiencies by increased homocysteine and methylmalonic acid in the body.'"
+            }
+        ];
+
+        // --- Core Logic ---
+        const quizRoot = document.getElementById('quiz-root');
+        const themeSelect = document.getElementById('theme-select');
+        const pinBtn = document.getElementById('pin-btn');
+        const mainHeader = document.getElementById('main-header');
+        const sectionNav = document.getElementById('section-nav');
+        const customBuilder = document.getElementById('custom-builder');
+        const rootElements = document.documentElement;
+
+        let isRevealed = false;
+
+        function toggleAllLOs() {
+            isRevealed = !isRevealed;
+            const btn = document.getElementById('reveal-all-btn');
+            btn.textContent = isRevealed ? "Hide Learning Objectives" : "Show Learning Objectives";
+            
+            document.querySelectorAll('.lo-box').forEach(box => {
+                box.style.display = isRevealed ? 'block' : 'none';
+            });
+        }
+
+        function initQuiz() {
+            let currentSection = "";
+            let sectionIndex = 0;
+            
+            quizData.forEach((item, index) => {
+                if (item.section !== currentSection) {
+                    currentSection = item.section;
+                    
+                    const sectionId = 'sec-' + sectionIndex;
+                    
+                    const sectionHeader = document.createElement('h2');
+                    sectionHeader.className = 'section-header';
+                    sectionHeader.id = sectionId;
+                    sectionHeader.textContent = currentSection;
+                    quizRoot.appendChild(sectionHeader);
+
+                    const navBtn = document.createElement('button');
+                    let btnText = currentSection;
+                    if (btnText.includes("Superior and Inferior Mesenteric")) btnText = "Mesenteric Arteries & Viscera";
+                    if (btnText.includes("Development of the Pharyngeal Arches")) btnText = "Pharyngeal Arches Development";
+                    if (btnText.includes("Development of the Gastrointestinal System")) btnText = "GI System Development";
+                    
+                    navBtn.textContent = btnText;
+                    navBtn.onclick = () => {
+                        document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+                    };
+                    sectionNav.appendChild(navBtn);
+
+                    sectionIndex++;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `q-card-${index}`;
+
+                const loBox = document.createElement('div');
+                loBox.className = 'lo-box';
+                loBox.id = `lo-${index}`;
+                loBox.innerHTML = item.fullLO;
+                card.appendChild(loBox);
+
+                const qText = document.createElement('div');
+                qText.className = 'question-text';
+                qText.innerHTML = `${index + 1}. ${item.question}`;
+                card.appendChild(qText);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'options-grid';
+
+                for (const[key, value] of Object.entries(item.options)) {
+                    const label = document.createElement('label');
+                    label.className = 'option-label';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question-${index}`;
+                    input.value = key;
+
+                    const span = document.createElement('span');
+                    span.innerHTML = `${key}. ${value}`;
+
+                    label.appendChild(input);
+                    label.appendChild(span);
+                    optionsGrid.appendChild(label);
+                }
+                card.appendChild(optionsGrid);
+
+                const btn = document.createElement('button');
+                btn.className = 'btn-check';
+                btn.textContent = 'Check Answer';
+                btn.onclick = () => checkAnswer(index);
+                card.appendChild(btn);
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = `feedback-${index}`;
+                card.appendChild(feedback);
+
+                quizRoot.appendChild(card);
+            });
+
+            const returnContainer = document.createElement('div');
+            returnContainer.style.textAlign = 'center';
+            returnContainer.style.marginTop = '2rem';
+            
+            const returnBtn = document.createElement('a');
+            returnBtn.href = 'https://ibecerramcg.github.io/GI-GU-ENDO-Practice-Quizzes/';
+            returnBtn.className = 'btn-link';
+            returnBtn.textContent = '← Return to Quiz Directory';
+            
+            returnContainer.appendChild(returnBtn);
+            quizRoot.appendChild(returnContainer);
+
+            const savedTheme = localStorage.getItem('quizTheme') || 'dark';
+            themeSelect.value = savedTheme;
+            changeTheme(savedTheme);
+
+            const savedPinState = localStorage.getItem('headerPinned');
+            toggleHeader(savedPinState !== 'false');
+        }
+
+        function checkAnswer(index) {
+            const selected = document.querySelector(`input[name="question-${index}"]:checked`);
+            const feedbackEl = document.getElementById(`feedback-${index}`);
+            const data = quizData[index];
+
+            if (!selected) {
+                alert("Please select an answer.");
+                return;
+            }
+
+            const isCorrect = selected.value === data.correctAnswer;
+            
+            let html = `<span class="feedback-header">${isCorrect ? "Correct!" : "Incorrect"}</span>`;
+            if (!isCorrect) {
+                html += `<div>The correct answer is <strong>${data.correctAnswer}</strong>.</div>`;
+            }
+            
+            html += `<div class="rationale"><strong>Rationale:</strong> ${data.rationale}</div>`;
+            html += `<div class="source"><strong>Source:</strong> ${data.source}</div>`;
+
+            feedbackEl.innerHTML = html;
+            feedbackEl.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedbackEl.style.display = 'block';
+        }
+
+        function changeTheme(themeName) {
+            localStorage.setItem('quizTheme', themeName);
+            
+            if (themeName === 'custom') {
+                rootElements.removeAttribute('data-theme');
+                customBuilder.classList.add('active');
+                loadCustomTheme();
+            } else {
+                rootElements.setAttribute('data-theme', themeName);
+                customBuilder.classList.remove('active');
+                rootElements.removeAttribute('style');
+            }
+        }
+
+        function updateCustomTheme() {
+            const bg = document.getElementById('color-bg').value;
+            const card = document.getElementById('color-card').value;
+            const text = document.getElementById('color-text').value;
+            const accent = document.getElementById('color-accent').value;
+
+            rootElements.style.setProperty('--bg-body', bg);
+            rootElements.style.setProperty('--bg-header', bg);
+            rootElements.style.setProperty('--bg-card', card);
+            rootElements.style.setProperty('--highlight-bg', card);
+            rootElements.style.setProperty('--text-main', text);
+            rootElements.style.setProperty('--text-accent', accent);
+            rootElements.style.setProperty('--button-bg', accent);
+            rootElements.style.setProperty('--button-text', bg);
+            rootElements.style.setProperty('--border-color', accent + '40');
+
+            const customColors = { bg, card, text, accent };
+            localStorage.setItem('customThemeColors', JSON.stringify(customColors));
+        }
+
+        function loadCustomTheme() {
+            const savedColors = JSON.parse(localStorage.getItem('customThemeColors'));
+            if (savedColors) {
+                document.getElementById('color-bg').value = savedColors.bg;
+                document.getElementById('color-card').value = savedColors.card;
+                document.getElementById('color-text').value = savedColors.text;
+                document.getElementById('color-accent').value = savedColors.accent;
+                updateCustomTheme();
+            } else {
+                updateCustomTheme();
+            }
+        }
+
+        function toggleHeader(forceState) {
+            const isCurrentlyPinned = !mainHeader.classList.contains('unpinned');
+            const newState = (typeof forceState === 'boolean') ? forceState : !isCurrentlyPinned;
+
+            if (newState) {
+                mainHeader.classList.remove('unpinned');
+                pinBtn.classList.add('pin-active');
+                localStorage.setItem('headerPinned', 'true');
+            } else {
+                mainHeader.classList.add('unpinned');
+                pinBtn.classList.remove('pin-active');
+                localStorage.setItem('headerPinned', 'false');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initQuiz);
+
+    </script>
+</body>
+</html>
